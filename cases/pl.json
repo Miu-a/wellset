@@ -8,5 +8,5 @@
   { "input": "dz. cyt., s. 5", "expected": "dz.\u00A0cyt., s. 5", "note": "skrót wielowyrazowy", "rules": ["multiword-abbreviation"] },
   { "input": "na stole", "expected": "na stole", "note": "dwuliterowy przyimek zostaje" },
   { "input": "", "expected": "", "note": "pusty ciąg" },
-  { "input": "<p>w <em>domu</em></p>", "expected": "<p>w\u00A0<em>domu</em></p>", "note": "znacznik inline", "rules": ["single-letter-word"] }
+  { "input": "<p>w <em>domu</em></p>", "expected": "<p>w\u00A0<em>domu</em></p>", "note": "znacznik inline", "rules": ["single-letter-word"], "html": true }
 ]

@@ -8,6 +8,7 @@ interface Case {
   expected: string;
   note: string;
   rules?: string[];
+  html?: boolean;
 }
 
 const casesDir = new URL('../../cases/', import.meta.url);
@@ -17,10 +18,10 @@ for (const file of readdirSync(casesDir).filter((name) => name.endsWith('.json')
   const cases = JSON.parse(readFileSync(new URL(file, casesDir), 'utf8')) as Case[];
 
   describe(lang, () => {
-    it.each(cases.map((c, index) => ({ ...c, index })))('#$index $note', ({ input, expected }) => {
-      const output = apply(input, lang);
+    it.each(cases.map((c, index) => ({ ...c, index })))('#$index $note', ({ input, expected, html }) => {
+      const output = apply(input, lang, { html });
       expect(output).toBe(expected);
-      expect(apply(output, lang)).toBe(output);
+      expect(apply(output, lang, { html })).toBe(output);
     });
 
     it('has a case for every rule', () => {

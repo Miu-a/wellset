@@ -10,5 +10,5 @@
   { "input": "пішов у ліс", "expected": "пішов у\u00A0ліс", "note": "однобуквений прийменник", "rules": ["one-letter-word"] },
   { "input": "3 245 758", "expected": "3\u00A0245\u00A0758", "note": "групи цифр", "rules": ["digit-group"] },
   { "input": "", "expected": "", "note": "порожній рядок" },
-  { "input": "<p>Я <strong>і</strong> ти</p>", "expected": "<p>Я <strong>і</strong>\u00A0ти</p>", "note": "inline-тег", "rules": ["one-letter-word"] }
+  { "input": "<p>Я <strong>і</strong> ти</p>", "expected": "<p>Я <strong>і</strong>\u00A0ти</p>", "note": "inline-тег", "rules": ["one-letter-word"], "html": true }
 ]

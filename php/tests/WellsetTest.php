@@ -14,7 +14,7 @@ use UnexpectedValueException;
 final class WellsetTest extends TestCase
 {
     /**
-     * @return iterable<string, array{string, string, string}>
+     * @return iterable<string, array{string, string, string, bool}>
      */
     public static function cases(): iterable
     {
@@ -27,18 +27,20 @@ final class WellsetTest extends TestCase
                 self::assertIsString($case['input']);
                 self::assertIsString($case['expected']);
                 self::assertIsString($case['note']);
-                yield "$lang #$index {$case['note']}" => [$lang, $case['input'], $case['expected']];
+                $html = $case['html'] ?? false;
+                self::assertIsBool($html);
+                yield "$lang #$index {$case['note']}" => [$lang, $case['input'], $case['expected'], $html];
             }
         }
     }
 
     #[DataProvider('cases')]
-    public function testCase(string $lang, string $input, string $expected): void
+    public function testCase(string $lang, string $input, string $expected, bool $html): void
     {
-        $output = Wellset::apply($input, $lang);
+        $output = Wellset::apply($input, $lang, $html);
 
         self::assertSame($expected, $output);
-        self::assertSame($output, Wellset::apply($output, $lang), 'apply is not idempotent');
+        self::assertSame($output, Wellset::apply($output, $lang, $html), 'apply is not idempotent');
     }
 
     public function testEveryRuleFileHasCases(): void

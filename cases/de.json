@@ -13,5 +13,5 @@
   { "input": "Stadtwerke AG und Meyer OHG", "expected": "Stadtwerke\u00A0AG und Meyer\u00A0OHG", "note": "Rechtsformzusatz", "rules": ["company-form"] },
   { "input": "50 000 Zuschauer, aber 5000 Zuschauer", "expected": "50\u00A0000 Zuschauer, aber 5000 Zuschauer", "note": "Dreiergruppen", "rules": ["digit-group"] },
   { "input": "", "expected": "", "note": "leerer String" },
-  { "input": "<p>Preis: 15 <span class=\"cur\">EUR</span></p>", "expected": "<p>Preis: 15\u00A0<span class=\"cur\">EUR</span></p>", "note": "Inline-Tag", "rules": ["number-unit"] }
+  { "input": "<p>Preis: 15 <span class=\"cur\">EUR</span></p>", "expected": "<p>Preis: 15\u00A0<span class=\"cur\">EUR</span></p>", "note": "Inline-Tag", "rules": ["number-unit"], "html": true }
 ]

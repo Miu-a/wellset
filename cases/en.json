@@ -13,5 +13,5 @@
   { "input": "I think a cat", "expected": "I\u00A0think a\u00A0cat", "note": "pronoun I and article a", "rules": ["article-pronoun"] },
   { "input": "in 2024 we grew", "expected": "in 2024 we grew", "note": "nothing to change" },
   { "input": "", "expected": "", "note": "empty string" },
-  { "input": "<p>Dr. <a href=\"/smith\">Smith</a></p>", "expected": "<p>Dr.\u00A0<a href=\"/smith\">Smith</a></p>", "note": "inline tag", "rules": ["honorific"] }
+  { "input": "<p>Dr. <a href=\"/smith\">Smith</a></p>", "expected": "<p>Dr.\u00A0<a href=\"/smith\">Smith</a></p>", "note": "inline tag", "rules": ["honorific"], "html": true }
 ]

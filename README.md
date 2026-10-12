@@ -1,6 +1,6 @@
 # wellset
 
-Knihovna nahradí běžné mezery (U+0020) pevnými (U+00A0) podle typografických pravidel jazyka. Ostatní text nechá beze změny. Funguje na čistý text i na HTML. Implementace v PHP a v TypeScriptu sdílejí stejná pravidla (`rules/`) i stejné testovací případy (`cases/`).
+Knihovna nahradí běžné mezery (U+0020) pevnými (U+00A0) podle typografických pravidel jazyka. Ostatní text nechá beze změny. Vstup bere jako čistý text, s volbou `html` jako HTML. Implementace v PHP a v TypeScriptu sdílejí stejná pravidla (`rules/`) i stejné testovací případy (`cases/`).
 
 ```php
 use Miua\Wellset\Wellset;
@@ -18,24 +18,56 @@ Knihovna nemá žádné runtime závislosti. PHP potřebuje verzi 8.2+ a rozší
 
 ## API
 
-`apply(text, lang)` vrátí upravený text.
+`apply(text, lang)` vrátí upravený text. Vstup je čistý text: `<` a `&` jsou obyčejné znaky a mění se jen samostatná mezera U+0020. Konec řádku a dvojitá mezera zůstanou.
+
+HTML předejte s volbou `html`:
+
+```php
+Wellset::apply($html, 'cs', html: true);
+```
+
+```ts
+apply(html, 'cs', { html: true });
+```
+
+Bez volby projde HTML jako text, takže pevné mezery skončí i v hodnotách atributů a v obsahu `<script>` nebo `<pre>`. Naopak čistý text s volbou `html` může přijít o obsah: `když a<b, jdu k mostu` zůstane beze změny, protože `<b, jdu k mostu` vypadá jako neuzavřený tag.
 
 - `lang` přijímá `cs`, `cs-CZ`, `cs_CZ` v libovolné velikosti písmen. Použije se část před `-` nebo `_`.
 - Neznámý jazyk vrátí text beze změny a nevyhodí výjimku. PHP zapíše varování přes `error_log()`, JS přes `console.warn`. Varování přijde při každém volání.
 - Když se nic nezmění, dostanete zpět původní řetězec.
-- `apply(apply(x)) === apply(x)`. Existující U+00A0 a `&nbsp;` jsou hranice slova.
+- `apply(apply(x)) === apply(x)`. Existující U+00A0 je hranice slova, v HTML i entity pevné mezery (`&nbsp;`, `&#160;`, `&#xA0;`).
 
-### Co se v HTML děje
+### Co se děje s volbou `html`
+
+Scanner se řídí tokenizérem HTML5, ale nestaví DOM a nekontroluje vnoření.
 
 - Tagy, hodnoty atributů, komentáře a entity zůstanou beze změny.
-- Obsah `<code>`, `<pre>`, `<script>`, `<style>` a `<textarea>` se přeskočí celý.
-- Inline tagy (`a`, `abbr`, `b`, `em`, `span`, `strong`, `sub`, `sup` a další z `INLINE_ELEMENTS`) slovo nepřeruší. Mezera v `5 <abbr>kg</abbr>` se proto změní na U+00A0.
-- Každý jiný tag (`p`, `br`, `li`, `td` …) slovo ukončí.
+- Mezera, tabulátor a konec řádku jsou jako v prohlížeči jedna mezera. Celý úsek bílých znaků, třeba `k \n mostu`, se nahradí jednou U+00A0.
+- Obsah `<code>`, `<pre>`, `<script>`, `<style>`, `<textarea>`, `<xmp>`, `<iframe>`, `<noembed>`, `<noframes>` a `<plaintext>` se přeskočí celý. Samouzavírací zápis (`<style/>` v SVG) obsah nemá.
+- Inline tagy (`a`, `abbr`, `b`, `em`, `font`, `label`, `span`, `strong`, `sub`, `sup`, `wbr` a další z `INLINE_ELEMENTS`) slovo nepřeruší. Mezera v `5 <abbr>kg</abbr>` se proto změní na U+00A0.
+- Každý jiný tag (`p`, `br`, `li`, `td`, `img`, vlastní elementy …) slovo ukončí.
 - `<` následované mezerou nebo číslicí je běžný znak, ne tag. `3 < 5` tedy projde jako text.
+- Uvozovky platí jen kolem hodnoty atributu. `<a title=it's>` končí na `>`, apostrof tag neprodlouží.
+- Komentář končí na `-->` nebo `--!>`, zkrácené `<!-->` a `<!--->` jsou celé komentáře. `<![CDATA[` končí na `]]>`. `<!…>`, `<?…>` a `</` bez názvu tagu končí na prvním `>`.
+
+Entity se pro porovnání s pravidly dekódují, ve výstupu zůstanou, jak byly. `&#269;. 9` se proto chová jako `č. 9` a `&bdquo;v domě` jako `„v domě`.
+
+- Číselné entity jsou desítkové i šestnáctkové (`&#160;`, `&#xA0;`).
+- Pojmenované entity knihovna zná jen tyto: `&nbsp;`, `&amp;`, `&quot;`, `&apos;`, `&bdquo;`, `&ldquo;`, `&rdquo;`, `&sbquo;`, `&lsquo;`, `&rsquo;`. Ostatní (`&ccaron;`) zůstanou textem a pravidlo se na ně nechytí.
+- Entita bez středníku (`&nbsp`, `&#160`) a neplatná číselná entita jsou běžný text.
+- Entita, která dekóduje na mezeru nebo tabulátor (`&#32;`), je hranice slova, ale na pevnou mezeru se nezmění. Mění se jen skutečný znak U+0020.
+- `&` bez platné entity (`AT&T`, `&foo;`) je běžný znak.
+
+### Šablony a Markdown
+
+Volejte `apply()` na hotový výstup, ne na zdroj.
+
+- **Šablony** (Twig, Latte, Blade) zpracujte až po vyrenderování. Syntaxi šablon knihovna nezná, takže `{% if a v b %}` změní na `{% if a~v~b %}` (`~` je pevná mezera) a šablona se rozbije.
+- **Markdown** převeďte nejdřív do HTML. Bloky kódu (```` ``` ````) a inline kód (`` ` ``) knihovna v Markdownu nepozná a pevné mezery vloží i do nich. Po převodu jsou z nich `<pre>` a `<code>`, které se přeskočí.
 
 ## Jak pravidla fungují
 
-Slovo je nejdelší úsek bez mezer. Mezeru odděluje tabulátor, konec řádku, U+00A0, `&nbsp;` a blokový tag. Mezera U+0020 se změní na pevnou, když ji splní aspoň jedno pravidlo. Pravidlo je splněné, když platí jeho podmínka `prev` (slovo před mezerou) i `next` (slovo za mezerou). Chybějící podmínka platí vždy.
+Slovo je nejdelší úsek bez mezer. Mezeru odděluje tabulátor, konec řádku, U+00A0, entita některého z těchto znaků a blokový tag. Mezera U+0020 (v HTML celý úsek bílých znaků) se změní na pevnou, když ji splní aspoň jedno pravidlo. Pravidlo je splněné, když platí jeho podmínka `prev` (slovo před mezerou) i `next` (slovo za mezerou). Chybějící podmínka platí vždy.
 
 ```json
 { "id": "number-unit", "prev": { "kind": ["number", "decimal"] }, "next": { "words": ["kg", "km", "%"] } }
@@ -169,7 +201,7 @@ class Article extends Model
     {
         static::saving(function (Article $article) {
             $article->title = Wellset::apply($article->title, $article->locale);
-            $article->body = Wellset::apply($article->body, $article->locale);
+            $article->body = Wellset::apply($article->body, $article->locale, html: true);
         });
     }
 }
@@ -194,12 +226,12 @@ export function Title({ text, lang }: { text: string; lang: string }) {
 }
 ```
 
-React U+00A0 vykreslí jako pevnou mezeru. Pro HTML z CMS volejte `apply` při ukládání a výsledek vložte přes `dangerouslySetInnerHTML`, opět jen sanitizovaný.
+React U+00A0 vykreslí jako pevnou mezeru. Pro HTML z CMS volejte `apply(html, lang, { html: true })` při ukládání a výsledek vložte přes `dangerouslySetInnerHTML`, opět jen sanitizovaný.
 
 ## Přidání jazyka
 
 1. Vytvořte `rules/<lang>.json` s poli `lang`, `source` a `rules`. Do `source` uveďte normu nebo jazykovou příručku.
-2. Vytvořte `cases/<lang>.json`: pole objektů `{ "input", "expected", "note", "rules" }`. V nepovinném `rules` uveďte `id` pravidel, která případ ověřuje. Pevnou mezeru zapisujte jako `\u00A0`.
+2. Vytvořte `cases/<lang>.json`: pole objektů `{ "input", "expected", "note", "rules", "html" }`. V nepovinném `rules` uveďte `id` pravidel, která případ ověřuje. Nepovinné `"html": true` spustí případ s volbou `html`. Pevnou mezeru zapisujte jako `\u00A0`.
 3. Spusťte testy (níže). PHP soubor najde samo, JS ho zaregistruje skript `js/scripts/gen-rules.mjs`, který běží před testy i buildem a generuje `js/src/rules.ts`.
 
 Kód měnit nemusíte, pokud jazyk nepotřebuje nový druh tokenu.
@@ -229,9 +261,9 @@ PHPUnit i Vitest spouští všechny soubory `cases/*.json` a u každého přípa
 
 | prostředí | 100 kB | propustnost |
 |---|---|---|
-| PHP 8.4.18 | 25,4 ms | 4,1 MB/s |
+| PHP 8.4.18 | 27,5 ms | 3,8 MB/s |
 | PHP 8.4.18, `opcache.jit=tracing` | 14,6 ms | 7,0 MB/s |
-| Node 24.13.1 | 8,1 ms | 12,7 MB/s |
+| Node 24.13.1 | 9,3 ms | 11,1 MB/s |
 
 Měřeno 12. 10. 2026 na vývojovém notebooku, průměr z 200 běhů. Čas roste lineárně i u patologických vstupů: 800 kB samých závorek nebo inline tagů trvá v PHP osmkrát déle než 100 kB.
 

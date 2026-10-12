@@ -1,15 +1,23 @@
 import { RuleSet } from './ruleset.js';
 import { ruleFiles } from './rules.js';
 
-const SKIPPED_ELEMENTS = new Set(['code', 'pre', 'script', 'style', 'textarea']);
+const SKIPPED_ELEMENTS = new Set([
+  'code', 'iframe', 'noembed', 'noframes', 'plaintext', 'pre', 'script', 'style', 'textarea', 'xmp',
+]);
 const INLINE_ELEMENTS = new Set([
-  'a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'data', 'del', 'dfn', 'em', 'i', 'ins', 'kbd',
-  'mark', 'q', 's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var',
+  'a', 'abbr', 'acronym', 'b', 'bdi', 'bdo', 'big', 'cite', 'data', 'del', 'dfn', 'em', 'font',
+  'i', 'ins', 'kbd', 'label', 'mark', 'nobr', 'output', 'q', 'rb', 'ruby', 's', 'samp', 'small',
+  'span', 'strike', 'strong', 'sub', 'sup', 'time', 'tt', 'u', 'var', 'wbr',
+]);
+const BOUNDARIES = new Set([' ', '\t', '\n', '\r', '\f', '\u00A0']);
+const ENTITIES = new Map([
+  ['nbsp', '\u00A0'], ['amp', '&'], ['quot', '"'], ['apos', "'"], ['bdquo', '„'],
+  ['ldquo', '“'], ['rdquo', '”'], ['sbquo', '‚'], ['lsquo', '‘'], ['rsquo', '’'],
 ]);
 
 const ruleSets = new Map<string, RuleSet>();
 
-export function apply(text: string, lang: string): string {
+export function apply(text: string, lang: string, { html = false }: { html?: boolean } = {}): string {
   const rules = ruleSet(lang);
   if (rules === null) {
     console.warn(`wellset: unknown language ${JSON.stringify(lang)}, text left unchanged`);
@@ -17,33 +25,41 @@ export function apply(text: string, lang: string): string {
   }
 
   const length = text.length;
-  const replaced: number[] = [];
+  const replaced: [number, number][] = [];
   let word = '';
   let wordStart = -1;
   let prevWord = '';
   let pendingSpace = -1;
+  let pendingEnd = -1;
 
   let i = 0;
   while (i <= length) {
     const code = text.charCodeAt(i);
     const isSpace = code === 0x20;
+    const isWhitespace = isSpace || code === 0x09 || code === 0x0a || code === 0x0d || code === 0x0c;
+    let entity: [number, string] | null = null;
     let tag: [number, boolean] | null = null;
     let boundaryEnd: number;
-    if (i === length || isSpace || code === 0x09 || code === 0x0a || code === 0x0d || code === 0x0c) {
+    if (i === length || isWhitespace) {
       boundaryEnd = i + 1;
+      while (html && isWhitespace && boundaryEnd < length && ' \t\n\r\f'.includes(text[boundaryEnd]!)) {
+        boundaryEnd++;
+      }
     } else if (code === 0xa0) {
       boundaryEnd = i + 1;
-    } else if (code === 0x26 && text.startsWith('&nbsp;', i)) {
-      boundaryEnd = i + 6;
-    } else if (code === 0x3c && (tag = parseTag(text, i)) !== null && tag[1]) {
+    } else if (html && code === 0x26 && (entity = parseEntity(text, i)) !== null && BOUNDARIES.has(entity[1])) {
+      boundaryEnd = entity[0];
+    } else if (html && code === 0x3c && (tag = parseTag(text, i)) !== null && tag[1]) {
       boundaryEnd = tag[0];
     } else {
-      if (tag !== null) {
+      const skipTo = entity?.[0] ?? tag?.[0];
+      if (skipTo !== undefined) {
         if (wordStart >= 0) {
           word += text.slice(wordStart, i);
           wordStart = -1;
         }
-        i = tag[0];
+        word += entity?.[1] ?? '';
+        i = skipTo;
       } else {
         wordStart = wordStart < 0 ? i : wordStart;
         i++;
@@ -56,9 +72,10 @@ export function apply(text: string, lang: string): string {
       wordStart = -1;
     }
     if (pendingSpace >= 0 && rules.matches(prevWord, word)) {
-      replaced.push(pendingSpace);
+      replaced.push([pendingSpace, pendingEnd]);
     }
-    pendingSpace = isSpace ? i : -1;
+    pendingSpace = (html ? isWhitespace : isSpace) ? i : -1;
+    pendingEnd = boundaryEnd;
     prevWord = word;
     word = '';
     i = boundaryEnd;
@@ -70,9 +87,9 @@ export function apply(text: string, lang: string): string {
 
   const parts: string[] = [];
   let from = 0;
-  for (const at of replaced) {
+  for (const [at, end] of replaced) {
     parts.push(text.slice(from, at), '\u00A0');
-    from = at + 1;
+    from = end;
   }
   parts.push(text.slice(from));
 
@@ -88,11 +105,13 @@ function parseTag(text: string, at: number): [number, boolean] | null {
   const first = text[at + 1] ?? '';
 
   if (text.startsWith('<!--', at)) {
-    const close = text.indexOf('-->', at + 4);
-    return [close < 0 ? length : close + 3, false];
+    return [commentEnd(text, at + 4), false];
   }
-  if (first === '!' || first === '?') {
-    return [tagEnd(text, at + 2), false];
+  if (text.startsWith('<![CDATA[', at)) {
+    return [indexAfter(text, ']]>', at + 9), false];
+  }
+  if (first === '!' || first === '?' || (first === '/' && at + 2 < length && !isLetter(text.charCodeAt(at + 2)))) {
+    return [indexAfter(text, '>', at + 2), false];
   }
 
   const nameStart = at + (first === '/' ? 2 : 1);
@@ -100,13 +119,13 @@ function parseTag(text: string, at: number): [number, boolean] | null {
     return null;
   }
   let nameEnd = nameStart;
-  while (nameEnd < length && isNameChar(text.charCodeAt(nameEnd))) {
+  while (nameEnd < length && !' \t\n\r\f/>'.includes(text[nameEnd]!)) {
     nameEnd++;
   }
   const name = text.slice(nameStart, nameEnd).toLowerCase();
   const end = tagEnd(text, nameEnd);
 
-  if (first !== '/' && SKIPPED_ELEMENTS.has(name)) {
+  if (first !== '/' && SKIPPED_ELEMENTS.has(name) && !text.startsWith('/>', end - 2)) {
     let search = end;
     let close: number;
     while ((close = text.indexOf('</', search)) >= 0) {
@@ -122,28 +141,118 @@ function parseTag(text: string, at: number): [number, boolean] | null {
   return [end, !INLINE_ELEMENTS.has(name)];
 }
 
+/**
+ * Returns the offset after the ">" that ends the tag. Quotes count only around an attribute value.
+ */
 function tagEnd(text: string, from: number): number {
-  let quote = '';
-  for (let i = from; i < text.length; i++) {
-    const char = text[i];
-    if (quote !== '') {
-      quote = char === quote ? '' : quote;
-    } else if (char === '"' || char === "'") {
-      quote = char;
-    } else if (char === '>') {
-      return i + 1;
+  const length = text.length;
+  let i = from;
+  while (i < length) {
+    while (i < length && ' \t\n\r\f/'.includes(text[i]!)) {
+      i++;
     }
+    if (i >= length || text[i] === '>') {
+      break;
+    }
+    i++;
+    while (i < length && !' \t\n\r\f/>='.includes(text[i]!)) {
+      i++;
+    }
+    while (i < length && ' \t\n\r\f'.includes(text[i]!)) {
+      i++;
+    }
+    if (text[i] !== '=') {
+      continue;
+    }
+    i++;
+    while (i < length && ' \t\n\r\f'.includes(text[i]!)) {
+      i++;
+    }
+    const quote = text[i];
+    if (quote === '"' || quote === "'") {
+      i = indexAfter(text, quote, i + 1);
+    } else {
+      while (i < length && !' \t\n\r\f>'.includes(text[i]!)) {
+        i++;
+      }
+    }
+  }
+
+  return Math.min(i + 1, length);
+}
+
+/**
+ * Returns the offset after a comment that started at "<!--" and continues at from.
+ */
+function commentEnd(text: string, from: number): number {
+  if (text[from] === '>') {
+    return from + 1;
+  }
+  if (text.startsWith('->', from)) {
+    return from + 2;
+  }
+  let dashes = from;
+  while ((dashes = text.indexOf('--', dashes)) >= 0) {
+    if (text[dashes + 2] === '>') {
+      return dashes + 3;
+    }
+    if (text.startsWith('!>', dashes + 2)) {
+      return dashes + 4;
+    }
+    dashes++;
   }
 
   return text.length;
 }
 
-function isLetter(code: number): boolean {
-  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+function indexAfter(text: string, needle: string, from: number): number {
+  const at = text.indexOf(needle, from);
+  return at < 0 ? text.length : at + needle.length;
 }
 
-function isNameChar(code: number): boolean {
-  return isLetter(code) || (code >= 48 && code <= 57) || code === 45;
+/**
+ * Returns [offset after the character reference, decoded text], or null when "&" starts none.
+ */
+function parseEntity(text: string, at: number): [number, string] | null {
+  const length = text.length;
+  if (text[at + 1] === '#') {
+    const hex = text[at + 2] === 'x' || text[at + 2] === 'X';
+    const digitsStart = at + (hex ? 3 : 2);
+    let end = digitsStart;
+    let value = 0;
+    while (end < length) {
+      const digit = digitValue(text.charCodeAt(end), hex);
+      if (digit < 0) {
+        break;
+      }
+      value = Math.min(value * (hex ? 16 : 10) + digit, 0x110000);
+      end++;
+    }
+    if (end === digitsStart || text[end] !== ';' || value > 0x10ffff || (value >= 0xd800 && value <= 0xdfff)) {
+      return null;
+    }
+    return [end + 1, String.fromCodePoint(value)];
+  }
+
+  let nameEnd = at + 1;
+  while (nameEnd < length && isLetter(text.charCodeAt(nameEnd))) {
+    nameEnd++;
+  }
+  const named = text[nameEnd] === ';' ? ENTITIES.get(text.slice(at + 1, nameEnd)) : undefined;
+
+  return named === undefined ? null : [nameEnd + 1, named];
+}
+
+function digitValue(code: number, hex: boolean): number {
+  if (code >= 48 && code <= 57) {
+    return code - 48;
+  }
+  const lower = code | 0x20;
+  return hex && lower >= 97 && lower <= 102 ? lower - 87 : -1;
+}
+
+function isLetter(code: number): boolean {
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
 }
 
 function ruleSet(lang: string): RuleSet | null {

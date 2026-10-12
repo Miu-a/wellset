@@ -8,11 +8,11 @@ const bytes = Buffer.byteLength(text);
 const runs = 200;
 
 for (let i = 0; i < 20; i++) {
-  apply(text, 'cs');
+  apply(text, 'cs', { html: true });
 }
 const start = process.hrtime.bigint();
 for (let i = 0; i < runs; i++) {
-  apply(text, 'cs');
+  apply(text, 'cs', { html: true });
 }
 const perRun = Number(process.hrtime.bigint() - start) / runs / 1e6;
 

@@ -7,5 +7,5 @@
   { "input": "25. 02. 2009", "expected": "25.\u00A002.\u00A02009", "note": "dátum číslicami", "rules": ["date-day-month"] },
   { "input": "išiel v Košiciach", "expected": "išiel v Košiciach", "note": "jednopísmenové predložky sú otvorená otázka" },
   { "input": "", "expected": "", "note": "prázdny reťazec" },
-  { "input": "<p>váži 15 <b>kg</b></p>", "expected": "<p>váži 15\u00A0<b>kg</b></p>", "note": "inline tag", "rules": ["number-unit"] }
+  { "input": "<p>váži 15 <b>kg</b></p>", "expected": "<p>váži 15\u00A0<b>kg</b></p>", "note": "inline tag", "rules": ["number-unit"], "html": true }
 ]

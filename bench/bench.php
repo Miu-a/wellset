@@ -10,10 +10,10 @@ $sample = (string) file_get_contents(__DIR__ . '/sample.cs.html');
 $text = str_repeat($sample, intdiv(100 * 1024, strlen($sample)) + 1);
 $runs = 200;
 
-Wellset::apply($text, 'cs');
+Wellset::apply($text, 'cs', html: true);
 $start = hrtime(true);
 for ($i = 0; $i < $runs; $i++) {
-    Wellset::apply($text, 'cs');
+    Wellset::apply($text, 'cs', html: true);
 }
 $perRun = (hrtime(true) - $start) / $runs / 1e6;
 
