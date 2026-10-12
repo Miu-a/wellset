@@ -1,0 +1,12 @@
+[
+  { "input": "Kot i pies", "expected": "Kot i pies", "note": "jednoliterowy spójnik" },
+  { "input": "(W domu", "expected": "(W domu", "note": "wielka litera po nawiasie" },
+  { "input": "z domu w las", "expected": "z domu w las", "note": "jednoliterowe przyimki" },
+  { "input": "20 km i 38,4 kg.", "expected": "20 km i 38,4 kg.", "note": "liczba i jednostka" },
+  { "input": "12 500 osób", "expected": "12 500 osób", "note": "grupy cyfr" },
+  { "input": "1 000 000", "expected": "1 000 000", "note": "grupy cyfr" },
+  { "input": "dz. cyt., s. 5", "expected": "dz. cyt., s. 5", "note": "skrót wielowyrazowy" },
+  { "input": "na stole", "expected": "na stole", "note": "dwuliterowy przyimek zostaje" },
+  { "input": "", "expected": "", "note": "pusty ciąg" },
+  { "input": "<p>w <em>domu</em></p>", "expected": "<p>w <em>domu</em></p>", "note": "znacznik inline" }
+]

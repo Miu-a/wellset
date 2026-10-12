@@ -1,0 +1,32 @@
+{
+  "name": "wellset",
+  "version": "0.1.0",
+  "description": "Replaces spaces with non-breaking spaces by the typographic rules of a language.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./js/dist/index.d.ts",
+      "default": "./js/dist/index.js"
+    }
+  },
+  "files": [
+    "js/dist",
+    "rules/"
+  ],
+  "scripts": {
+    "rules": "node js/scripts/gen-rules.mjs",
+    "build": "npm run rules && tsc -p js/tsconfig.build.json",
+    "typecheck": "npm run rules && tsc -p js/tsconfig.json",
+    "test": "npm run rules && vitest run",
+    "bench": "npm run build && node bench/bench.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

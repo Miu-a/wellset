@@ -1,0 +1,10 @@
+{
+  "lang": "sk",
+  "source": "STN 01 6910 Pravidlá písania a úpravy písomností, výklad normy (2010), oddiely 3.3, 3.5 a úprava úradných listov, https://www.stuba.sk/new/docs/stu/pracoviska/rektorat/odd_pravne_organizacne/STN_01_6910_Pravidla_pisania_a_upravy_pisomnosti.pdf",
+  "rules": [
+    { "id": "number-unit", "prev": { "kind": ["number", "decimal"] }, "next": { "words": ["kg", "g", "t", "m", "km", "cm", "mm", "min", "h", "d", "W", "kW", "kWh", "m/s", "‰"] } },
+    { "id": "date-day-month", "prev": { "kind": "ordinal" }, "next": { "kind": ["ordinal", "number"] } },
+    { "id": "date-day-month-name", "prev": { "kind": "ordinal" }, "next": { "words": ["januára", "februára", "marca", "apríla", "mája", "júna", "júla", "augusta", "septembra", "októbra", "novembra", "decembra"], "caseInsensitive": true } },
+    { "id": "date-month-year", "prev": { "words": ["januára", "februára", "marca", "apríla", "mája", "júna", "júla", "augusta", "septembra", "októbra", "novembra", "decembra"], "caseInsensitive": true }, "next": { "kind": "number" } }
+  ]
+}

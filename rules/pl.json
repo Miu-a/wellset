@@ -1,0 +1,10 @@
+{
+  "lang": "pl",
+  "source": "Poradnia Językowa PWN (https://sjp.pwn.pl/poradnia): A. Wolański, Sieroty na końcu wiersza (2018), Odstępy lub ich brak w oznaczeniach jednostek miar (2022), Reguły zapisu liczb (2022); M. Bańko, 20 km (2001), Zapis liczb wielocyfrowych a dzielenie wyrazów (2011); J. Grzenia (2009, dz. cyt.); Wielki słownik ortograficzny PWN, zasady pisowni §54.8",
+  "rules": [
+    { "id": "single-letter-word", "prev": { "words": ["a", "i", "o", "u", "w", "z"], "caseInsensitive": true } },
+    { "id": "number-unit", "prev": { "kind": ["number", "decimal"] }, "next": { "words": ["mm", "cm", "m", "km", "g", "kg", "t", "l", "h", "min", "s"] } },
+    { "id": "digit-group", "prev": { "kind": "number" }, "next": { "kind": "digit-group" } },
+    { "id": "multiword-abbreviation", "prev": { "words": ["dz."] }, "next": { "words": ["cyt"] } }
+  ]
+}

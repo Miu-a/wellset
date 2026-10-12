@@ -1,0 +1,6 @@
+parameters:
+    level: max
+    paths:
+        - php/src
+        - php/tests
+        - bench/bench.php

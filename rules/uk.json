@@ -1,0 +1,17 @@
+{
+  "lang": "uk",
+  "source": "Український правопис (2019), § 62, § 64 Технічні правила переносу, https://testportal.gov.ua/wp-content/uploads/2019/09/05062019-onovl-pravo.pdf; Близнюк А. С. Основні технічні правила набору текстів, ЖДУ ім. І. Франка, 2006, розд. 1.2, 1.3.5, https://eprints.zu.edu.ua/7122/",
+  "rules": [
+    { "id": "one-letter-word", "prev": { "words": ["в", "у", "з", "і", "й", "а", "о"], "caseInsensitive": true } },
+    { "id": "initial-surname", "prev": { "kind": "initial" } },
+    { "id": "title-name", "prev": { "words": ["гр.", "акад.", "доц.", "проф.", "п.", "тов.", "м."], "caseInsensitive": true } },
+    { "id": "number-unit", "prev": { "kind": ["number", "decimal"] }, "next": { "words": ["Б", "кБ", "Вт", "кВт", "г", "кг", "т", "ц", "га", "мм", "см", "дм", "м", "км", "см³", "л", "куб"] } },
+    { "id": "cubic-unit", "prev": { "words": ["куб."] }, "next": { "words": ["мм", "см", "дм", "м"] } },
+    { "id": "number-year", "prev": { "kind": "number" }, "next": { "words": ["р", "рр"] } },
+    { "id": "graphic-abbreviation-start", "prev": { "words": ["і", "та"], "caseInsensitive": true }, "next": { "words": ["т", "ін"] } },
+    { "id": "graphic-abbreviation-t", "prev": { "words": ["т."] }, "next": { "words": ["д", "ін", "п"] } },
+    { "id": "graphic-abbreviation-n-e", "prev": { "words": ["н."] }, "next": { "words": ["е"] } },
+    { "id": "sign-number", "prev": { "words": ["№", "§"] }, "next": { "kind": "number" } },
+    { "id": "digit-group", "prev": { "kind": "number" }, "next": { "kind": "digit-group" } }
+  ]
+}

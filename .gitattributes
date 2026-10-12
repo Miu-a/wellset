@@ -1,0 +1,11 @@
+/.gitattributes    export-ignore
+/.gitignore        export-ignore
+/bench             export-ignore
+/cases             export-ignore
+/js                export-ignore
+/php/tests         export-ignore
+/composer.lock     export-ignore
+/package.json      export-ignore
+/package-lock.json export-ignore
+/phpstan.neon      export-ignore
+/phpunit.xml       export-ignore

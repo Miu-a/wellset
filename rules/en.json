@@ -1,0 +1,15 @@
+{
+  "lang": "en",
+  "source": "New Hart's Rules (OUP 2005), 2.4.5, 5.10.8; The Chicago Manual of Style, 18th ed., 6.129 via CMOS Q&A Word Division faq0006 and faq0007; BIPM SI Brochure, 9th ed. (2019), 5.4.3, 5.4.7; M. Butterick, Practical Typography, Nonbreaking spaces, https://practicaltypography.com/nonbreaking-spaces.html",
+  "rules": [
+    { "id": "number-unit", "prev": { "kind": ["number", "decimal"] }, "next": { "words": ["mm", "cm", "m", "km", "mg", "g", "kg", "s", "ms", "min", "h", "Hz", "kHz", "MHz", "GHz", "Pa", "kPa", "J", "kJ", "W", "kW", "V", "mA", "mL", "L", "mol", "K", "°C", "%"] } },
+    { "id": "number-era", "prev": { "kind": "number" }, "next": { "words": ["BC"] } },
+    { "id": "page-line-reference", "prev": { "words": ["p.", "pp.", "l.", "ll."] }, "next": { "kind": "number" } },
+    { "id": "reference-mark", "prev": { "words": ["§", "¶", "Fig.", "Ex."] } },
+    { "id": "honorific", "prev": { "words": ["Mr.", "Mrs.", "Ms.", "Dr.", "Sgt.", "St."] } },
+    { "id": "initials", "prev": { "kind": "initial" }, "next": { "kind": "initial" } },
+    { "id": "before-middle-initial", "next": { "kind": "initial" } },
+    { "id": "name-suffix", "next": { "words": ["Jr", "Sr", "II", "III", "IV"] } },
+    { "id": "article-pronoun", "prev": { "words": ["a", "A", "I"] } }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "lang": "cs",
+  "source": "Internetová jazyková příručka ÚJČ AV ČR, heslo Zalomení řádků a nevhodné výrazy na jejich konci, oddíl Nevhodné výrazy na konci řádků, https://prirucka.ujc.cas.cz/?id=880",
+  "rules": [
+    { "id": "single-letter-word", "prev": { "words": ["k", "s", "v", "z", "o", "u", "a", "i"], "caseInsensitive": true } },
+    { "id": "digit-group", "prev": { "kind": "number" }, "next": { "kind": "digit-group" } },
+    { "id": "number-unit", "prev": { "kind": ["number", "decimal"] }, "next": { "words": ["%", "‰", "str", "hod", "mm", "cm", "m", "km", "m²", "m³", "g", "kg", "h", "min", "°C", "Kč", "€", "$", "EUR", "CZK"] } },
+    { "id": "symbol-number", "prev": { "words": ["§", "#", "*", "†"] }, "next": { "kind": "number" } },
+    { "id": "abbreviation-number", "prev": { "words": ["s.", "č.", "obr.", "tab."] }, "next": { "kind": "number" } },
+    { "id": "noun-number", "prev": { "words": ["strana", "tabulka"], "caseInsensitive": true }, "next": { "kind": "number" } },
+    { "id": "date-day-month", "prev": { "kind": "ordinal" }, "next": { "kind": "ordinal" } },
+    { "id": "date-day-month-name", "prev": { "kind": "ordinal" }, "next": { "words": ["ledna", "února", "března", "dubna", "května", "června", "července", "srpna", "září", "října", "listopadu", "prosince"], "caseInsensitive": true } },
+    { "id": "compound-abbreviation-a-s", "prev": { "words": ["a."] }, "next": { "words": ["s"] } },
+    { "id": "compound-abbreviation-s-r-o", "prev": { "words": ["s."] }, "next": { "words": ["r"] } },
+    { "id": "compound-abbreviation-r-o", "prev": { "words": ["r."] }, "next": { "words": ["o"] } },
+    { "id": "compound-abbreviation-mn-c", "prev": { "words": ["mn."] }, "next": { "words": ["č"] } },
+    { "id": "compound-abbreviation-pr-n-l", "prev": { "words": ["př."] }, "next": { "words": ["n"] } },
+    { "id": "compound-abbreviation-n-l", "prev": { "words": ["n."] }, "next": { "words": ["l"] } },
+    { "id": "abbreviation-following", "prev": { "words": ["tj.", "tzv.", "tzn."], "caseInsensitive": true } },
+    { "id": "initial-surname", "prev": { "kind": "initial" } },
+    { "id": "title-name", "prev": { "words": ["p.", "pí", "mjr.", "Ing.", "Mgr.", "Bc.", "MUDr.", "JUDr.", "PhDr.", "RNDr.", "doc.", "prof."] } }
+  ]
+}

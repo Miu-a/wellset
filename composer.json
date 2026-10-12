@@ -1,0 +1,32 @@
+{
+    "name": "miu-a/wellset",
+    "description": "Replaces spaces with non-breaking spaces by the typographic rules of a language.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Miua\\Wellset\\": "php/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Miua\\Wellset\\Tests\\": "php/tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=512M",
+        "bench": "php bench/bench.php"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

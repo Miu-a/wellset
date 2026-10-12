@@ -1,0 +1,17 @@
+{
+  "lang": "de",
+  "source": "DIN 5008:2020, geschütztes Leerzeichen, Beispiele nach Stenografenzeitung 2022 (https://stenografenzeitung.de/wp-content/uploads/2022/04/DIN-5008___2020.pdf) und federwerk.de (https://federwerk.de/geschuetzte-leerzeichen-bitte-nicht-trennen/); Austrian Standards, Fachinformation 23 Größen und Einheiten (ÖNORM EN ISO 80000-1), 3.3, 5.3, 8.1",
+  "rules": [
+    { "id": "number-unit", "prev": { "kind": ["number", "decimal"] }, "next": { "words": ["%", "‰", "mm", "cm", "m", "km", "m²", "g", "kg", "t", "l", "ml", "h", "min", "s", "°C", "EUR", "€", "$", "Uhr"] } },
+    { "id": "digit-group", "prev": { "kind": "number" }, "next": { "kind": "digit-group" } },
+    { "id": "ordinal-month", "prev": { "kind": "ordinal" }, "next": { "words": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"] } },
+    { "id": "paragraph-number", "prev": { "words": ["§", "§§"] }, "next": { "kind": "number" } },
+    { "id": "abbreviation-number", "prev": { "words": ["S.", "Abs."] }, "next": { "kind": "number" } },
+    { "id": "number-following", "prev": { "kind": "number" }, "next": { "words": ["f", "ff"] } },
+    { "id": "dotted-abbreviation-z-b", "prev": { "words": ["z."] }, "next": { "words": ["B"] } },
+    { "id": "dotted-abbreviation-u-a", "prev": { "words": ["u."] }, "next": { "words": ["a", "Ä"] } },
+    { "id": "dotted-abbreviation-e-v", "prev": { "words": ["e."] }, "next": { "words": ["V"] } },
+    { "id": "title-name", "prev": { "words": ["Dr.", "Prof."] } },
+    { "id": "company-form", "next": { "words": ["AG", "OHG"] } }
+  ]
+}
