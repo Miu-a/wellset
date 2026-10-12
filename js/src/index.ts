@@ -12,7 +12,7 @@ const ruleSets = new Map<string, RuleSet>();
 export function apply(text: string, lang: string): string {
   const rules = ruleSet(lang);
   if (rules === null) {
-    console.warn(`wellset: unknown language "${lang}", text left unchanged`);
+    console.warn(`wellset: unknown language ${JSON.stringify(lang)}, text left unchanged`);
     return text;
   }
 

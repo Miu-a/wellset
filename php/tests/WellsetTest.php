@@ -63,6 +63,7 @@ final class WellsetTest extends TestCase
         try {
             self::assertSame('k mostu', Wellset::apply('k mostu', 'xx-YY'));
             self::assertSame('k mostu', Wellset::apply('k mostu', '../cs'));
+            self::assertSame('k mostu', Wellset::apply('k mostu', "xx\nforged"));
         } finally {
             ini_set('error_log', (string) $previous);
         }
@@ -71,5 +72,6 @@ final class WellsetTest extends TestCase
         unlink($log);
         self::assertStringContainsString('unknown language "xx-YY"', $logged);
         self::assertStringContainsString('unknown language "../cs"', $logged);
+        self::assertStringContainsString('unknown language "xx\nforged"', $logged);
     }
 }

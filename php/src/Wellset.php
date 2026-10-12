@@ -23,7 +23,8 @@ final class Wellset
     {
         $rules = self::ruleSet($lang);
         if ($rules === null) {
-            error_log("wellset: unknown language \"$lang\", text left unchanged");
+            $quoted = json_encode($lang, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            error_log("wellset: unknown language $quoted, text left unchanged");
             return $text;
         }
 

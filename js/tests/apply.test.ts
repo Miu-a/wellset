@@ -45,7 +45,9 @@ describe('language tag', () => {
 
     expect(apply('k mostu', 'xx-YY')).toBe('k mostu');
     expect(apply('k mostu', '__proto__')).toBe('k mostu');
-    expect(warn).toHaveBeenCalledTimes(2);
+    expect(apply('k mostu', 'xx\nforged')).toBe('k mostu');
+    expect(warn).toHaveBeenCalledTimes(3);
     expect(warn.mock.calls[0]?.[0]).toContain('unknown language "xx-YY"');
+    expect(warn.mock.calls[2]?.[0]).toContain('unknown language "xx\\nforged"');
   });
 });
