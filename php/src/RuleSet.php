@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Miua\Wellset;
 
+use stdClass;
 use UnexpectedValueException;
 
 /**
@@ -36,17 +37,17 @@ final class RuleSet
             throw new UnexpectedValueException("Cannot read $path");
         }
 
-        $data = json_decode($json, true, 16, JSON_THROW_ON_ERROR);
-        if (!is_array($data) || !isset($data['rules']) || !is_array($data['rules'])) {
+        $data = json_decode($json, false, 16, JSON_THROW_ON_ERROR);
+        if (!$data instanceof stdClass || !isset($data->rules) || !is_array($data->rules)) {
             throw new UnexpectedValueException("$path: missing \"rules\" array");
         }
 
         $set = new self();
-        foreach ($data['rules'] as $rule) {
-            if (!is_array($rule) || !isset($rule['id']) || !is_string($rule['id'])) {
+        foreach ($data->rules as $rule) {
+            if (!$rule instanceof stdClass || !isset($rule->id) || !is_string($rule->id)) {
                 throw new UnexpectedValueException("$path: every rule needs a string \"id\"");
             }
-            $set->add($rule, "$path#{$rule['id']}");
+            $set->add($rule, "$path#{$rule->id}");
         }
 
         return $set;
@@ -88,17 +89,14 @@ final class RuleSet
         return false;
     }
 
-    /**
-     * @param array<mixed> $rule
-     */
-    private function add(array $rule, string $where): void
+    private function add(stdClass $rule, string $where): void
     {
-        if (!isset($rule['prev']) && !isset($rule['next'])) {
+        if (!property_exists($rule, 'prev') && !property_exists($rule, 'next')) {
             throw new UnexpectedValueException("$where: needs \"prev\" or \"next\"");
         }
 
-        $prevKeys = self::conditionKeys($rule['prev'] ?? null, $this->prevUses, $where);
-        $nextKeys = self::conditionKeys($rule['next'] ?? null, $this->nextUses, $where);
+        $prevKeys = self::conditionKeys($rule, 'prev', $this->prevUses, $where);
+        $nextKeys = self::conditionKeys($rule, 'next', $this->nextUses, $where);
         foreach ($prevKeys as $prevKey) {
             foreach ($nextKeys as $nextKey) {
                 $this->pairs[$prevKey][$nextKey] = true;
@@ -110,19 +108,20 @@ final class RuleSet
      * @param array{w: bool, i: bool, k: bool, any: bool} $uses
      * @return list<string>
      */
-    private static function conditionKeys(mixed $condition, array &$uses, string $where): array
+    private static function conditionKeys(stdClass $rule, string $side, array &$uses, string $where): array
     {
-        if ($condition === null) {
+        if (!property_exists($rule, $side)) {
             $uses['any'] = true;
             return ['*'];
         }
-        if (!is_array($condition) || isset($condition['words']) === isset($condition['kind'])) {
+        $condition = $rule->$side;
+        if (!$condition instanceof stdClass || property_exists($condition, 'words') === property_exists($condition, 'kind')) {
             throw new UnexpectedValueException("$where: a condition needs exactly one of \"words\" or \"kind\"");
         }
 
-        if (isset($condition['kind'])) {
+        if (property_exists($condition, 'kind')) {
             $keys = [];
-            foreach ((array) $condition['kind'] as $kind) {
+            foreach (is_array($condition->kind) ? $condition->kind : [$condition->kind] as $kind) {
                 if (!is_string($kind) || !in_array($kind, self::KINDS, true)) {
                     throw new UnexpectedValueException("$where: unknown kind");
                 }
@@ -132,13 +131,13 @@ final class RuleSet
             return $keys;
         }
 
-        if (!is_array($condition['words']) || $condition['words'] === []) {
+        if (!is_array($condition->words) || $condition->words === []) {
             throw new UnexpectedValueException("$where: \"words\" must be a non-empty array");
         }
-        $caseInsensitive = ($condition['caseInsensitive'] ?? false) === true;
+        $caseInsensitive = ($condition->caseInsensitive ?? false) === true;
         $uses[$caseInsensitive ? 'i' : 'w'] = true;
         $keys = [];
-        foreach ($condition['words'] as $word) {
+        foreach ($condition->words as $word) {
             if (!is_string($word) || $word === '') {
                 throw new UnexpectedValueException("$where: words must be non-empty strings");
             }

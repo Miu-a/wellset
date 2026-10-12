@@ -199,7 +199,7 @@ React U+00A0 vykreslí jako pevnou mezeru. Pro HTML z CMS volejte `apply` při u
 ## Přidání jazyka
 
 1. Vytvořte `rules/<lang>.json` s poli `lang`, `source` a `rules`. Do `source` uveďte normu nebo jazykovou příručku.
-2. Vytvořte `cases/<lang>.json`: pole objektů `{ "input", "expected", "note" }`. Pevnou mezeru zapisujte jako ` `.
+2. Vytvořte `cases/<lang>.json`: pole objektů `{ "input", "expected", "note", "rules" }`. V nepovinném `rules` uveďte `id` pravidel, která případ ověřuje. Pevnou mezeru zapisujte jako ` `.
 3. Spusťte testy (níže). PHP soubor najde samo, JS ho zaregistruje skript `js/scripts/gen-rules.mjs`, který běží před testy i buildem a generuje `js/src/rules.ts`.
 
 Kód měnit nemusíte, pokud jazyk nepotřebuje nový druh tokenu.
@@ -207,7 +207,7 @@ Kód měnit nemusíte, pokud jazyk nepotřebuje nový druh tokenu.
 ## Přidání pravidla
 
 1. Přidejte objekt do `rules` v `rules/<lang>.json`. `id` musí být v souboru jedinečné.
-2. Přidejte případy do `cases/<lang>.json`, kladné i záporné.
+2. Přidejte případy do `cases/<lang>.json`, kladné i záporné. Aspoň jeden kladný případ musí mít `id` pravidla v poli `rules`, jinak testy selžou.
 3. Potřebuje-li pravidlo nový druh tokenu, přidejte ho do `KINDS` a do funkce `kinds` v `php/src/RuleSet.php` i `js/src/ruleset.ts`. Obě implementace musí vracet stejné druhy.
 
 ## Vývoj
@@ -221,7 +221,7 @@ npm run typecheck   # tsc --strict
 npm run build       # js/dist
 ```
 
-PHPUnit i Vitest spouští všechny soubory `cases/*.json` a u každého případu ověří i idempotenci.
+PHPUnit i Vitest spouští všechny soubory `cases/*.json` a u každého případu ověří i idempotenci. Ke každému `rules/<lang>.json` musí existovat `cases/<lang>.json` a každé pravidlo musí mít aspoň jeden případ. Soubor `cases/invalid/rules.json` obsahuje vadná pravidla a chybu, kterou na ně obě implementace musí vyhodit.
 
 ## Benchmark
 

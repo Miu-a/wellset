@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Miua\Wellset\Tests;
 
+use Miua\Wellset\RuleSet;
 use Miua\Wellset\Wellset;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use stdClass;
+use UnexpectedValueException;
 
 final class WellsetTest extends TestCase
 {
@@ -36,6 +39,78 @@ final class WellsetTest extends TestCase
 
         self::assertSame($expected, $output);
         self::assertSame($output, Wellset::apply($output, $lang), 'apply is not idempotent');
+    }
+
+    public function testEveryRuleFileHasCases(): void
+    {
+        $langs = static fn (string $dir): array => array_map(
+            static fn (string $file): string => basename($file, '.json'),
+            glob(__DIR__ . "/../../$dir/*.json") ?: [],
+        );
+
+        self::assertNotSame([], $langs('rules'));
+        self::assertSame($langs('rules'), $langs('cases'));
+    }
+
+    public function testEveryRuleHasACase(): void
+    {
+        foreach (glob(__DIR__ . '/../../rules/*.json') ?: [] as $file) {
+            $lang = basename($file, '.json');
+            $ruleFile = json_decode((string) file_get_contents($file), true, 16, JSON_THROW_ON_ERROR);
+            $cases = json_decode((string) file_get_contents(__DIR__ . "/../../cases/$lang.json"), true, 8, JSON_THROW_ON_ERROR);
+            self::assertIsArray($ruleFile);
+            self::assertIsArray($ruleFile['rules']);
+            self::assertIsArray($cases);
+
+            $covered = [];
+            foreach ($cases as $case) {
+                self::assertIsArray($case);
+                $rules = $case['rules'] ?? [];
+                self::assertIsArray($rules);
+                foreach ($rules as $id) {
+                    self::assertIsString($id);
+                    $covered[] = $id;
+                }
+            }
+            $covered = array_unique($covered);
+            $ids = array_column($ruleFile['rules'], 'id');
+            sort($covered);
+            sort($ids);
+
+            self::assertSame($ids, $covered, $lang);
+        }
+    }
+
+    /**
+     * @return iterable<string, array{mixed, string}>
+     */
+    public static function invalidRules(): iterable
+    {
+        $cases = json_decode((string) file_get_contents(__DIR__ . '/../../cases/invalid/rules.json'), false, 16, JSON_THROW_ON_ERROR);
+        self::assertIsArray($cases);
+        foreach ($cases as $index => $case) {
+            self::assertInstanceOf(stdClass::class, $case);
+            self::assertIsString($case->error);
+            self::assertIsString($case->note);
+            yield "#$index {$case->note}" => [$case->data, $case->error];
+        }
+    }
+
+    #[DataProvider('invalidRules')]
+    public function testInvalidRuleFileIsRejected(mixed $data, string $error): void
+    {
+        $file = tempnam(sys_get_temp_dir(), 'wellset');
+        self::assertIsString($file);
+        file_put_contents($file, json_encode($data, JSON_THROW_ON_ERROR));
+
+        try {
+            RuleSet::fromFile($file);
+            self::fail('no exception thrown');
+        } catch (UnexpectedValueException $e) {
+            self::assertStringContainsString($error, $e->getMessage());
+        } finally {
+            unlink($file);
+        }
     }
 
     public function testLanguageTagIsNormalised(): void
