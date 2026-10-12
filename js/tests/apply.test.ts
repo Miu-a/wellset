@@ -60,8 +60,8 @@ it('stays linear on long punctuation runs', () => {
   const closing = ')'.repeat(200_000);
   const opening = '('.repeat(200_000);
 
-  expect(apply(`k mostu${closing}`, 'cs')).toBe(`k mostu${closing}`);
-  expect(apply(`${opening}k mostu`, 'cs')).toBe(`${opening}k mostu`);
+  expect(apply(`k mostu${closing}`, 'cs')).toBe(`k\u00A0mostu${closing}`);
+  expect(apply(`${opening}k mostu`, 'cs')).toBe(`${opening}k\u00A0mostu`);
 });
 
 describe('language tag', () => {
@@ -70,7 +70,7 @@ describe('language tag', () => {
   });
 
   it.each(['cs', 'CS', 'cs-CZ', 'cs_CZ', 'Cs_cz'])('normalises %s', (lang) => {
-    expect(apply('k mostu', lang)).toBe('k mostu');
+    expect(apply('k mostu', lang)).toBe('k\u00A0mostu');
   });
 
   it('returns the input unchanged and warns for an unknown language', () => {

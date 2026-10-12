@@ -11,7 +11,7 @@ Wellset::apply('Jdu k mostu, váží 5 kg.', 'cs-CZ'); // "Jdu k\u{00A0}mostu, v
 ```ts
 import { apply } from 'wellset';
 
-apply('Jdu k mostu, váží 5 kg.', 'cs'); // "Jdu k mostu, váží 5 kg."
+apply('Jdu k mostu, váží 5 kg.', 'cs'); // "Jdu k\u00A0mostu, váží 5\u00A0kg."
 ```
 
 Knihovna nemá žádné runtime závislosti. PHP potřebuje verzi 8.2+ a rozšíření `mbstring`. JS je ESM a pravidla importuje jako JSON (`with { type: 'json' }`), což zvládá Node 22+, Vite i webpack 5.
@@ -199,7 +199,7 @@ React U+00A0 vykreslí jako pevnou mezeru. Pro HTML z CMS volejte `apply` při u
 ## Přidání jazyka
 
 1. Vytvořte `rules/<lang>.json` s poli `lang`, `source` a `rules`. Do `source` uveďte normu nebo jazykovou příručku.
-2. Vytvořte `cases/<lang>.json`: pole objektů `{ "input", "expected", "note", "rules" }`. V nepovinném `rules` uveďte `id` pravidel, která případ ověřuje. Pevnou mezeru zapisujte jako ` `.
+2. Vytvořte `cases/<lang>.json`: pole objektů `{ "input", "expected", "note", "rules" }`. V nepovinném `rules` uveďte `id` pravidel, která případ ověřuje. Pevnou mezeru zapisujte jako `\u00A0`.
 3. Spusťte testy (níže). PHP soubor najde samo, JS ho zaregistruje skript `js/scripts/gen-rules.mjs`, který běží před testy i buildem a generuje `js/src/rules.ts`.
 
 Kód měnit nemusíte, pokud jazyk nepotřebuje nový druh tokenu.

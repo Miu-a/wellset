@@ -71,7 +71,7 @@ export function apply(text: string, lang: string): string {
   const parts: string[] = [];
   let from = 0;
   for (const at of replaced) {
-    parts.push(text.slice(from, at), ' ');
+    parts.push(text.slice(from, at), '\u00A0');
     from = at + 1;
   }
   parts.push(text.slice(from));

@@ -1,12 +1,12 @@
 [
-  { "input": "Kot i pies", "expected": "Kot i pies", "note": "jednoliterowy spójnik", "rules": ["single-letter-word"] },
-  { "input": "(W domu", "expected": "(W domu", "note": "wielka litera po nawiasie", "rules": ["single-letter-word"] },
-  { "input": "z domu w las", "expected": "z domu w las", "note": "jednoliterowe przyimki", "rules": ["single-letter-word"] },
-  { "input": "20 km i 38,4 kg.", "expected": "20 km i 38,4 kg.", "note": "liczba i jednostka", "rules": ["number-unit"] },
-  { "input": "12 500 osób", "expected": "12 500 osób", "note": "grupy cyfr", "rules": ["digit-group"] },
-  { "input": "1 000 000", "expected": "1 000 000", "note": "grupy cyfr", "rules": ["digit-group"] },
-  { "input": "dz. cyt., s. 5", "expected": "dz. cyt., s. 5", "note": "skrót wielowyrazowy", "rules": ["multiword-abbreviation"] },
+  { "input": "Kot i pies", "expected": "Kot i\u00A0pies", "note": "jednoliterowy spójnik", "rules": ["single-letter-word"] },
+  { "input": "(W domu", "expected": "(W\u00A0domu", "note": "wielka litera po nawiasie", "rules": ["single-letter-word"] },
+  { "input": "z domu w las", "expected": "z\u00A0domu w\u00A0las", "note": "jednoliterowe przyimki", "rules": ["single-letter-word"] },
+  { "input": "20 km i 38,4 kg.", "expected": "20\u00A0km i\u00A038,4\u00A0kg.", "note": "liczba i jednostka", "rules": ["number-unit"] },
+  { "input": "12 500 osób", "expected": "12\u00A0500 osób", "note": "grupy cyfr", "rules": ["digit-group"] },
+  { "input": "1 000 000", "expected": "1\u00A0000\u00A0000", "note": "grupy cyfr", "rules": ["digit-group"] },
+  { "input": "dz. cyt., s. 5", "expected": "dz.\u00A0cyt., s. 5", "note": "skrót wielowyrazowy", "rules": ["multiword-abbreviation"] },
   { "input": "na stole", "expected": "na stole", "note": "dwuliterowy przyimek zostaje" },
   { "input": "", "expected": "", "note": "pusty ciąg" },
-  { "input": "<p>w <em>domu</em></p>", "expected": "<p>w <em>domu</em></p>", "note": "znacznik inline", "rules": ["single-letter-word"] }
+  { "input": "<p>w <em>domu</em></p>", "expected": "<p>w\u00A0<em>domu</em></p>", "note": "znacznik inline", "rules": ["single-letter-word"] }
 ]

@@ -1,11 +1,11 @@
 [
-  { "input": "váži 15 kg", "expected": "váži 15 kg", "note": "číslo a jednotka", "rules": ["number-unit"] },
-  { "input": "rýchlosť 10 m/s.", "expected": "rýchlosť 10 m/s.", "note": "zložená jednotka, koncová bodka", "rules": ["number-unit"] },
-  { "input": "spotreba 6,5 km", "expected": "spotreba 6,5 km", "note": "desatinné číslo", "rules": ["number-unit"] },
-  { "input": "800 W a 45 min", "expected": "800 W a 45 min", "note": "spojka a sa neviaže, chýba overený zdroj", "rules": ["number-unit"] },
-  { "input": "6. januára 2010", "expected": "6. januára 2010", "note": "dátum sa nerozdeľuje", "rules": ["date-day-month-name", "date-month-year"] },
-  { "input": "25. 02. 2009", "expected": "25. 02. 2009", "note": "dátum číslicami", "rules": ["date-day-month"] },
+  { "input": "váži 15 kg", "expected": "váži 15\u00A0kg", "note": "číslo a jednotka", "rules": ["number-unit"] },
+  { "input": "rýchlosť 10 m/s.", "expected": "rýchlosť 10\u00A0m/s.", "note": "zložená jednotka, koncová bodka", "rules": ["number-unit"] },
+  { "input": "spotreba 6,5 km", "expected": "spotreba 6,5\u00A0km", "note": "desatinné číslo", "rules": ["number-unit"] },
+  { "input": "800 W a 45 min", "expected": "800\u00A0W a 45\u00A0min", "note": "spojka a sa neviaže, chýba overený zdroj", "rules": ["number-unit"] },
+  { "input": "6. januára 2010", "expected": "6.\u00A0januára\u00A02010", "note": "dátum sa nerozdeľuje", "rules": ["date-day-month-name", "date-month-year"] },
+  { "input": "25. 02. 2009", "expected": "25.\u00A002.\u00A02009", "note": "dátum číslicami", "rules": ["date-day-month"] },
   { "input": "išiel v Košiciach", "expected": "išiel v Košiciach", "note": "jednopísmenové predložky sú otvorená otázka" },
   { "input": "", "expected": "", "note": "prázdny reťazec" },
-  { "input": "<p>váži 15 <b>kg</b></p>", "expected": "<p>váži 15 <b>kg</b></p>", "note": "inline tag", "rules": ["number-unit"] }
+  { "input": "<p>váži 15 <b>kg</b></p>", "expected": "<p>váži 15\u00A0<b>kg</b></p>", "note": "inline tag", "rules": ["number-unit"] }
 ]

@@ -1,14 +1,14 @@
 [
-  { "input": "Т. Г. Шевченко", "expected": "Т. Г. Шевченко", "note": "ініціали і прізвище", "rules": ["initial-surname"] },
-  { "input": "проф. Гончаренко і м. Київ", "expected": "проф. Гончаренко і м. Київ", "note": "скорочення перед прізвищем і назвою", "rules": ["title-name"] },
-  { "input": "150 га і 5 г", "expected": "150 га і 5 г", "note": "число і назва міри", "rules": ["number-unit"] },
-  { "input": "20 куб. см", "expected": "20 куб. см", "note": "кубічні сантиметри", "rules": ["number-unit", "cubic-unit"] },
-  { "input": "у 2024 р.", "expected": "у 2024 р.", "note": "число і рік", "rules": ["number-year"] },
-  { "input": "і т. д. та ін.", "expected": "і т. д. та ін.", "note": "графічні скорочення", "rules": ["graphic-abbreviation-start", "graphic-abbreviation-t"] },
-  { "input": "до н. е.", "expected": "до н. е.", "note": "графічне скорочення", "rules": ["graphic-abbreviation-n-e"] },
-  { "input": "№ 25 і § 64", "expected": "№ 25 і § 64", "note": "знак номера і параграфа", "rules": ["sign-number"] },
-  { "input": "пішов у ліс", "expected": "пішов у ліс", "note": "однобуквений прийменник", "rules": ["one-letter-word"] },
-  { "input": "3 245 758", "expected": "3 245 758", "note": "групи цифр", "rules": ["digit-group"] },
+  { "input": "Т. Г. Шевченко", "expected": "Т.\u00A0Г.\u00A0Шевченко", "note": "ініціали і прізвище", "rules": ["initial-surname"] },
+  { "input": "проф. Гончаренко і м. Київ", "expected": "проф.\u00A0Гончаренко і\u00A0м.\u00A0Київ", "note": "скорочення перед прізвищем і назвою", "rules": ["title-name"] },
+  { "input": "150 га і 5 г", "expected": "150\u00A0га і\u00A05\u00A0г", "note": "число і назва міри", "rules": ["number-unit"] },
+  { "input": "20 куб. см", "expected": "20\u00A0куб.\u00A0см", "note": "кубічні сантиметри", "rules": ["number-unit", "cubic-unit"] },
+  { "input": "у 2024 р.", "expected": "у\u00A02024\u00A0р.", "note": "число і рік", "rules": ["number-year"] },
+  { "input": "і т. д. та ін.", "expected": "і\u00A0т.\u00A0д. та\u00A0ін.", "note": "графічні скорочення", "rules": ["graphic-abbreviation-start", "graphic-abbreviation-t"] },
+  { "input": "до н. е.", "expected": "до н.\u00A0е.", "note": "графічне скорочення", "rules": ["graphic-abbreviation-n-e"] },
+  { "input": "№ 25 і § 64", "expected": "№\u00A025 і\u00A0§\u00A064", "note": "знак номера і параграфа", "rules": ["sign-number"] },
+  { "input": "пішов у ліс", "expected": "пішов у\u00A0ліс", "note": "однобуквений прийменник", "rules": ["one-letter-word"] },
+  { "input": "3 245 758", "expected": "3\u00A0245\u00A0758", "note": "групи цифр", "rules": ["digit-group"] },
   { "input": "", "expected": "", "note": "порожній рядок" },
-  { "input": "<p>Я <strong>і</strong> ти</p>", "expected": "<p>Я <strong>і</strong> ти</p>", "note": "inline-тег", "rules": ["one-letter-word"] }
+  { "input": "<p>Я <strong>і</strong> ти</p>", "expected": "<p>Я <strong>і</strong>\u00A0ти</p>", "note": "inline-тег", "rules": ["one-letter-word"] }
 ]
