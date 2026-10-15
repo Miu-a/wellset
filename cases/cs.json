@@ -12,6 +12,10 @@
   { "input": "váží 10 kg.", "expected": "váží 10\u00A0kg.", "note": "koncová tečka se před porovnáním odstraní", "rules": ["number-unit"] },
   { "input": "2,5 km", "expected": "2,5\u00A0km", "note": "desetinné číslo a jednotka", "rules": ["number-unit"] },
   { "input": "5 str. a 8 hod.", "expected": "5\u00A0str. a\u00A08\u00A0hod.", "note": "zkratka počítaného předmětu", "rules": ["number-unit"] },
+  { "input": "přišlo 500 lidí, za 365 dní, 2,5 litru", "expected": "přišlo 500 lidí, za 365 dní, 2,5 litru", "note": "číslo a slovo mimo seznam jednotek se neváže" },
+  { "input": "rok 2024 (viz 5 – 6)", "expected": "rok 2024 (viz 5\u00A0– 6)", "note": "pomlčka v rozsahu s mezerami", "rules": ["spaced-dash"] },
+  { "input": "T.G. Masaryk a T.G.M.", "expected": "T.G.\u00A0Masaryk a\u00A0T.G.M.", "note": "řetěz iniciál bez mezer", "rules": ["initial-surname"] },
+  { "input": "Bydlím doma. V Praze ne.", "expected": "Bydlím doma. V\u00A0Praze ne.", "note": "jednopísmenné slovo na začátku věty", "rules": ["single-letter-word"] },
   { "input": "podle § 23", "expected": "podle §\u00A023", "note": "značka a číslo", "rules": ["symbol-number"] },
   { "input": "s. 53, č. 9, obr. 1, tab. 3", "expected": "s.\u00A053, č.\u00A09, obr.\u00A01, tab.\u00A03", "note": "zkratka a číslo", "rules": ["abbreviation-number"] },
   { "input": "strana 2 a Tabulka 3", "expected": "strana\u00A02 a\u00A0Tabulka\u00A03", "note": "název počítaného jevu a číslo", "rules": ["noun-number"] },
@@ -46,7 +50,7 @@
   { "input": "<p>Jdu k <a href=\"/most a dům\" title=\"k mostu\">mostu</a> a domů.</p>", "expected": "<p>Jdu k\u00A0<a href=\"/most a dům\" title=\"k mostu\">mostu</a> a\u00A0domů.</p>", "note": "HTML, atributy se nemění", "html": true },
   { "input": "váží 5 <abbr title=\"kilogram\">kg</abbr>", "expected": "váží 5\u00A0<abbr title=\"kilogram\">kg</abbr>", "note": "inline tag před následujícím slovem", "html": true },
   { "input": "<b>v</b> domě", "expected": "<b>v</b>\u00A0domě", "note": "inline tag kolem předchozího slova", "html": true },
-  { "input": "<em>T.</em><em>G.</em> M.", "expected": "<em>T.</em><em>G.</em> M.", "note": "inline tagy slovo nepřeruší, T.G. není iniciála", "html": true },
+  { "input": "<em>T.</em><em>G.</em> M.", "expected": "<em>T.</em><em>G.</em>\u00A0M.", "note": "inline tagy slovo nepřeruší, T.G. je řetěz iniciál", "html": true },
   { "input": "<p>text v</p> <p>domě</p>", "expected": "<p>text v</p> <p>domě</p>", "note": "blokový tag slovo ukončí", "html": true },
   { "input": "text v<br>domě a v domě", "expected": "text v<br>domě a\u00A0v\u00A0domě", "note": "br je hranice slova", "html": true },
   { "input": "v <code>k mostu</code> a v domě", "expected": "v <code>k mostu</code> a\u00A0v\u00A0domě", "note": "obsah code se přeskočí", "html": true },
@@ -64,7 +68,8 @@
   { "input": "&bdquo;v domě&ldquo;", "expected": "&bdquo;v\u00A0domě&ldquo;", "note": "uvozovky zapsané entitou se odstraní před porovnáním", "html": true },
   { "input": "&quot;k mostu&quot;", "expected": "&quot;k\u00A0mostu&quot;", "note": "&quot; se odstraní před porovnáním", "html": true },
   { "input": "AT&T v domě, &foo; k mostu, &#; a &#x; v domě", "expected": "AT&T v\u00A0domě, &foo; k\u00A0mostu, &#; a\u00A0&#x; v\u00A0domě", "note": "& bez platné entity je běžný znak", "html": true },
-  { "input": "&ccaron;. 9, &#8222v domě, &quotk mostu", "expected": "&ccaron;. 9, &#8222v domě, &quotk mostu", "note": "neznámá pojmenovaná entita a entita bez středníku zůstanou textem", "html": true },
+  { "input": "&#8222v domě, &quotk mostu", "expected": "&#8222v\u00A0domě, &quotk\u00A0mostu", "note": "entita bez středníku se dekóduje jako v prohlížeči", "html": true },
+  { "input": "v &nbspa domu", "expected": "v &nbspa\u00A0domu", "note": "&nbsp bez středníku je hranice slova", "html": true },
   { "input": "&#x110000; &#xD800; &#99999999999999999999; v domě", "expected": "&#x110000; &#xD800; &#99999999999999999999; v\u00A0domě", "note": "neplatná číselná entita je běžný text", "html": true },
   { "input": "<!--> v domě <!---> v domě <!-- k mostu --!> v domě", "expected": "<!--> v\u00A0domě <!---> v\u00A0domě <!-- k mostu --!> v\u00A0domě", "note": "zkrácené komentáře a --!>", "html": true },
   { "input": "<![CDATA[ k > mostu ]]> v domě", "expected": "<![CDATA[ k > mostu ]]> v\u00A0domě", "note": "CDATA končí na ]]>", "html": true },
@@ -75,5 +80,5 @@
   { "input": "<svg><style/><text>v domě</text></svg>", "expected": "<svg><style/><text>v\u00A0domě</text></svg>", "note": "samouzavírací přeskakovaný element nemá obsah", "html": true },
   { "input": "<xmp>k mostu</xmp><iframe>k mostu</iframe><noembed>k mostu</noembed> v domě", "expected": "<xmp>k mostu</xmp><iframe>k mostu</iframe><noembed>k mostu</noembed> v\u00A0domě", "note": "obsah xmp, iframe a noembed se přeskočí", "html": true },
   { "input": "<font>v</font> <label>k</label> mostu", "expected": "<font>v</font>\u00A0<label>k</label>\u00A0mostu", "note": "font a label slovo nepřeruší", "html": true },
-  { "input": "T.<wbr>G. M.", "expected": "T.<wbr>G. M.", "note": "wbr slovo nepřeruší", "html": true }
+  { "input": "T.<wbr>G. M.", "expected": "T.<wbr>G.\u00A0M.", "note": "wbr slovo nepřeruší", "html": true }
 ]

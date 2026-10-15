@@ -16,6 +16,64 @@ apply('Jdu k mostu, váží 5 kg.', 'cs'); // "Jdu k\u00A0mostu, váží 5\u00A0
 
 Knihovna nemá žádné runtime závislosti. PHP potřebuje verzi 8.2+ a rozšíření `mbstring`. JS je ESM a pravidla importuje jako JSON (`with { type: 'json' }`), což zvládá Node 22+, Vite i webpack 5.
 
+## Knihovna jako doplněk CSS
+
+Zalamování řádků řídí prohlížeč a většinu práce zvládne sám, když mu dáte jazyk a pár vlastností CSS. Prohlížeč se řídí pravidly Unicode (UAX #14) a smí zalomit za každou mezerou. Žádná vlastnost CSS mu neřekne, že `k` nemá zůstat na konci řádku nebo že `5 kg` patří k sobě. Tohle místo knihovna doplňuje: vloží pevnou mezeru tam, kde pravidla jazyka zalomení zakazují. Ostatní nechává na CSS.
+
+Jazyk nastavte atributem `lang`. Bez něj prohlížeč nedělí slova podle správného slovníku:
+
+```html
+<html lang="cs">
+  ...
+  <blockquote lang="de">...</blockquote>
+```
+
+Pro běžný text stačí:
+
+```css
+article {
+  hyphens: auto;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+
+h1, h2, h3 {
+  hyphens: manual;
+  text-wrap: balance;
+}
+```
+
+| vlastnost | co dělá |
+|---|---|
+| `hyphens: auto` | dělí slova podle slovníku jazyka z `lang`, v úzkém sloupci pak nevznikají velké mezery |
+| `hyphenate-limit-chars: 6 3 3` | nedělí slova kratší než 6 znaků a na každé straně nechá aspoň 3 |
+| `overflow-wrap: break-word` | zalomí dlouhé URL, které by jinak přetekly z kontejneru |
+| `text-wrap: pretty` | nenechá poslední slovo odstavce samotné na řádku |
+| `text-wrap: balance` | rozloží nadpis do řádků podobné délky |
+
+Podpora se liší podle prohlížeče, u `hyphens: auto` i podle jazyka. Kde vlastnost chybí, prohlížeč zalomí text běžně a nic se nerozbije.
+
+Pro jednotlivá místa v textu má HTML tyto znaky:
+
+| znak | zápis | význam |
+|---|---|---|
+| pevná mezera | `&nbsp;`, U+00A0 | tady nezalamovat, tento znak vkládá knihovna |
+| úzká pevná mezera | U+202F | totéž, užší |
+| měkký spojovník | `&shy;` | tady smí prohlížeč rozdělit slovo spojovníkem |
+| místo zalomení | `<wbr>` | tady smí prohlížeč zalomit bez spojovníku |
+| pevný spojovník | U+2011 | za tímto spojovníkem nezalamovat |
+
+Knihovna proto záměrně nedělá tyto věci:
+
+| co | čím to nahradit |
+|---|---|
+| vkládat `&shy;`, to by chtělo slovník dělení pro každý jazyk | `hyphens: auto` |
+| vázat poslední slovo odstavce, v úzkém sloupci to škodí | `text-wrap: pretty` |
+| vkládat `<wbr>` do URL | `overflow-wrap: break-word` |
+| opakovat spojovník na začátku řádku (`česko-` / `-slovenský`) | pevnou mezerou to nejde a prohlížeče to neumí |
+
+Nové pravidlo knihovna přijme, když zdroj (norma nebo jazyková příručka) výslovně říká, že zalomení na tom místě je chyba, a když se pravidlo dá zapsat úzce, seznamem slov nebo přesným druhem tokenu. Každá pevná mezera navíc bere prohlížeči jedno místo pro zalomení. Pravidlo typu „číslo a libovolné slovo“ proto v úzkém sloupci napáchá víc škody, než kolik zalomení opraví.
+
 ## API
 
 `apply(text, lang)` vrátí upravený text. Vstup je čistý text: `<` a `&` jsou obyčejné znaky a mění se jen samostatná mezera U+0020. Konec řádku a dvojitá mezera zůstanou.
@@ -54,7 +112,7 @@ Entity se pro porovnání s pravidly dekódují, ve výstupu zůstanou, jak byly
 
 - Číselné entity jsou desítkové i šestnáctkové (`&#160;`, `&#xA0;`).
 - Pojmenované entity knihovna zná jen tyto: `&nbsp;`, `&amp;`, `&quot;`, `&apos;`, `&bdquo;`, `&ldquo;`, `&rdquo;`, `&sbquo;`, `&lsquo;`, `&rsquo;`. Ostatní (`&ccaron;`) zůstanou textem a pravidlo se na ně nechytí.
-- Entita bez středníku (`&nbsp`, `&#160`) a neplatná číselná entita jsou běžný text.
+- Číselnou entitu bez středníku (`&#160`) a z pojmenovaných `&nbsp`, `&amp` a `&quot` bez středníku dekóduje knihovna stejně jako prohlížeč. `&quotk` je tedy `"k`. Ostatní pojmenované entity bez středníku a neplatná číselná entita jsou běžný text.
 - Entita, která dekóduje na mezeru nebo tabulátor (`&#32;`), je hranice slova, ale na pevnou mezeru se nezmění. Mění se jen skutečný znak U+0020.
 - `&` bez platné entity (`AT&T`, `&foo;`) je běžný znak.
 
@@ -84,6 +142,7 @@ Před porovnáním se z `prev` odstraní úvodní `( [ „ " ‚ '` a z `next` k
 | `ordinal` | číslice a tečka | `1.` |
 | `decimal` | číslice, `,` nebo `.`, číslice | `2,5`, `30.2` |
 | `initial` | jedno velké písmeno a tečka | `T.`, `Г.` |
+| `initials` | dvě a více iniciál bez mezer | `T.G.`, `T.G.M.` |
 
 Kód rozpozná druhy průchodem po znacích, bez regexu, v PHP i JS stejně (`RuleSet::kinds()`, `kinds()` v `js/src/ruleset.ts`).
 
@@ -108,7 +167,7 @@ Zdroj: Internetová jazyková příručka ÚJČ AV ČR, [Zalomení řádků a ne
 | `date-day-month`, `date-day-month-name` | `21.~6. 2024`, `16.~ledna 1972` |
 | `compound-abbreviation-*` | `s.~r.~o.`, `a.~s.`, `př.~n.~l.`, `mn.~č.` |
 | `abbreviation-following`: tj. tzv. tzn. | `tzv.~klikání` |
-| `initial-surname` | `M.~Těšitelová`, `T.~G.~M.` |
+| `initial-surname` | `M.~Těšitelová`, `T.~G.~M.`, `T.G.~Masaryk` |
 | `title-name` | `Ing.~Ivana Poliaková` |
 | `spaced-dash`: pomlčka zůstane na konci řádku | `Přišel~– a~hned` |
 | `number-operator`, `operator-number`: `:` `=` | `1~:~50~000`, `10~:~2~=~5` |
@@ -139,7 +198,6 @@ Zdroj: New Hart's Rules (OUP 2005) 2.4.5 a 5.10.8; The Chicago Manual of Style, 
 | `reference-mark`: § ¶ Fig. Ex. (Butterick) | `Fig.~23` |
 | `honorific`: Mr. Mrs. Ms. Dr. Sgt. St. | `Dr.~Smith` |
 | `initials` (NHR 2.4.5, CMOS 6.129) | `T.~S. Eliot` |
-| `before-middle-initial` (CMOS Q&A) | `John~Q. Public` |
 | `name-suffix`: Jr Sr II III IV (CMOS Q&A) | `King~Jr.`, `Henry~IV` |
 | `article-pronoun`: a, A, I (NHR 2.4.5, „if possible“) | `a~cat`, `I~think` |
 
@@ -276,10 +334,12 @@ Tato pravidla knihovna nezavádí, protože jsem pro ně nenašel ověřitelný 
 
 **Formát a tokeny**
 
-- Číslo a počítané slovo (`500 lidí`), řadová číslovka a slovo (`5. pluk`), římské číslice (`II. patro`, `Karel IV.`). Chybí druh „libovolné slovo“ a `roman`. Řadovou číslovku před libovolným slovem nelze odlišit od čísla na konci věty.
+- Řadová číslovka a slovo (`5. pluk`, `II. patro`), cs. Řadovou číslovku před slovem nelze odlišit od čísla na konci věty.
+- Číslo a počítaný jev (`500 lidí`), cs. Pravidlo pro libovolné slovo by vázalo i `2024~se` a seznam počítaných slov nemá konec.
+- Jméno a římská číslice (`Karel IV.`), cs, a jméno před prostřední iniciálou (`John Q. Public`), en. Jméno nejde odlišit od jiného slova, takže by pravidlo vázalo i `skupina~V.` nebo `plan~B.`
 - Předvolba telefonního čísla (`+420 800`) a kódy z písmen (`PS PČR`), cs. `+420` není `number`.
 - Zkratky rodných jmen delší než jedno písmeno (`Fr. Daneš`), cs.
-- `initial` zachytí i větu končící velkým písmenem (`vitamín C. Další`). U němčiny jsem `initial-surname` vynechal, protože by vázal `z. B. und`.
+- `initial` zachytí i větu končící velkým písmenem (`vitamín C. Další`), `initials` i tečkovanou zkratku (`U.S.A. je`). U němčiny jsem `initial-surname` vynechal, protože by vázal `z. B. und`.
 
 **Jazyky**
 

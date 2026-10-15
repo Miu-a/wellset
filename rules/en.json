@@ -8,7 +8,6 @@
     { "id": "reference-mark", "prev": { "words": ["§", "¶", "Fig.", "Ex."] } },
     { "id": "honorific", "prev": { "words": ["Mr.", "Mrs.", "Ms.", "Dr.", "Sgt.", "St."] } },
     { "id": "initials", "prev": { "kind": "initial" }, "next": { "kind": "initial" } },
-    { "id": "before-middle-initial", "next": { "kind": "initial" } },
     { "id": "name-suffix", "next": { "words": ["Jr", "Sr", "II", "III", "IV"] } },
     { "id": "article-pronoun", "prev": { "words": ["a", "A", "I"] } }
   ]

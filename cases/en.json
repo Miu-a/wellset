@@ -8,7 +8,6 @@
   { "input": "§ 1782 and Fig. 23", "expected": "§\u00A01782 and Fig.\u00A023", "note": "reference marks", "rules": ["reference-mark"] },
   { "input": "Dr. Smith met Ms. Marvel", "expected": "Dr.\u00A0Smith met Ms.\u00A0Marvel", "note": "honorifics", "rules": ["honorific"] },
   { "input": "T. S. Eliot", "expected": "T.\u00A0S. Eliot", "note": "initials stay together, surname may break", "rules": ["initials"] },
-  { "input": "John Q. Public", "expected": "John\u00A0Q. Public", "note": "before a middle initial", "rules": ["before-middle-initial"] },
   { "input": "Martin Luther King Jr. and Henry IV", "expected": "Martin Luther King\u00A0Jr. and Henry\u00A0IV", "note": "name suffixes", "rules": ["name-suffix"] },
   { "input": "I think a cat", "expected": "I\u00A0think a\u00A0cat", "note": "pronoun I and article a", "rules": ["article-pronoun"] },
   { "input": "in 2024 we grew", "expected": "in 2024 we grew", "note": "nothing to change" },

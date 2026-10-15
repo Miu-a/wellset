@@ -16,7 +16,7 @@ use UnexpectedValueException;
  */
 final class RuleSet
 {
-    private const KINDS = ['number', 'ordinal', 'decimal', 'digit-group', 'initial'];
+    private const KINDS = ['number', 'ordinal', 'decimal', 'digit-group', 'initial', 'initials'];
     private const DIGITS = '0123456789';
     private const PREV_LEADING = ['(', '[', '„', '"', '‚', "'"];
     private const NEXT_TRAILING = ['.', ',', ';', ':', '!', '?', ')', ']', '“', '"'];
@@ -196,14 +196,35 @@ final class RuleSet
             }
             return [];
         }
-        if ($length >= 2 && $length <= 5 && $word[$length - 1] === '.') {
+        $kinds = [];
+        if ($length >= 2 && $word[$length - 1] === '.') {
             $letter = substr($word, 0, -1);
-            if (mb_strlen($letter, 'UTF-8') === 1 && mb_strtolower($letter, 'UTF-8') !== $letter) {
-                return ['initial'];
+            if ($length <= 5 && mb_strlen($letter, 'UTF-8') === 1 && mb_strtolower($letter, 'UTF-8') !== $letter) {
+                $kinds[] = 'initial';
+            }
+            if (self::isInitials($word)) {
+                $kinds[] = 'initials';
             }
         }
 
-        return [];
+        return $kinds;
+    }
+
+    private static function isInitials(string $word): bool
+    {
+        $chars = mb_str_split($word, 1, 'UTF-8');
+        $count = count($chars);
+        if ($count < 4 || $count % 2 !== 0) {
+            return false;
+        }
+        for ($at = 0; $at < $count; $at += 2) {
+            $letter = $chars[$at];
+            if ($chars[$at + 1] !== '.' || mb_strtolower($letter, 'UTF-8') === $letter) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static function leadingEnd(string $word): int

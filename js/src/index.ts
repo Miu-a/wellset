@@ -14,6 +14,7 @@ const ENTITIES = new Map([
   ['nbsp', '\u00A0'], ['amp', '&'], ['quot', '"'], ['apos', "'"], ['bdquo', '„'],
   ['ldquo', '“'], ['rdquo', '”'], ['sbquo', '‚'], ['lsquo', '‘'], ['rsquo', '’'],
 ]);
+const LEGACY_ENTITIES = ['nbsp', 'amp', 'quot'];
 
 const ruleSets = new Map<string, RuleSet>();
 
@@ -228,10 +229,10 @@ function parseEntity(text: string, at: number): [number, string] | null {
       value = Math.min(value * (hex ? 16 : 10) + digit, 0x110000);
       end++;
     }
-    if (end === digitsStart || text[end] !== ';' || value > 0x10ffff || (value >= 0xd800 && value <= 0xdfff)) {
+    if (end === digitsStart || value > 0x10ffff || (value >= 0xd800 && value <= 0xdfff)) {
       return null;
     }
-    return [end + 1, String.fromCodePoint(value)];
+    return [text[end] === ';' ? end + 1 : end, String.fromCodePoint(value)];
   }
 
   let nameEnd = at + 1;
@@ -239,8 +240,12 @@ function parseEntity(text: string, at: number): [number, string] | null {
     nameEnd++;
   }
   const named = text[nameEnd] === ';' ? ENTITIES.get(text.slice(at + 1, nameEnd)) : undefined;
+  if (named !== undefined) {
+    return [nameEnd + 1, named];
+  }
+  const legacy = LEGACY_ENTITIES.find((name) => text.startsWith(name, at + 1));
 
-  return named === undefined ? null : [nameEnd + 1, named];
+  return legacy === undefined ? null : [at + 1 + legacy.length, ENTITIES.get(legacy)!];
 }
 
 function digitValue(code: number, hex: boolean): number {

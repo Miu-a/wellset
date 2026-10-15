@@ -26,6 +26,7 @@ final class Wellset
         'nbsp' => "\u{00A0}", 'amp' => '&', 'quot' => '"', 'apos' => "'", 'bdquo' => '„',
         'ldquo' => '“', 'rdquo' => '”', 'sbquo' => '‚', 'lsquo' => '‘', 'rsquo' => '’',
     ];
+    private const LEGACY_ENTITIES = ['nbsp', 'amp', 'quot'];
 
     /** @var array<string, RuleSet> */
     private static array $ruleSets = [];
@@ -234,7 +235,7 @@ final class Wellset
             $digitsStart = $at + ($hex ? 3 : 2);
             $digits = strspn($text, $hex ? self::DIGITS . 'abcdefABCDEF' : self::DIGITS, $digitsStart);
             $end = $digitsStart + $digits;
-            if ($digits === 0 || ($text[$end] ?? '') !== ';') {
+            if ($digits === 0) {
                 return null;
             }
             $significant = ltrim(substr($text, $digitsStart, $digits), '0');
@@ -242,13 +243,21 @@ final class Wellset
             if ($value > 0x10FFFF || ($value >= 0xD800 && $value <= 0xDFFF)) {
                 return null;
             }
-            return [$end + 1, (string) mb_chr($value, 'UTF-8')];
+            return [($text[$end] ?? '') === ';' ? $end + 1 : $end, (string) mb_chr($value, 'UTF-8')];
         }
 
         $nameEnd = $at + 1 + strspn($text, self::LETTERS, $at + 1);
         $named = ($text[$nameEnd] ?? '') === ';' ? self::ENTITIES[substr($text, $at + 1, $nameEnd - $at - 1)] ?? null : null;
+        if ($named !== null) {
+            return [$nameEnd + 1, $named];
+        }
+        foreach (self::LEGACY_ENTITIES as $name) {
+            if (substr($text, $at + 1, strlen($name)) === $name) {
+                return [$at + 1 + strlen($name), self::ENTITIES[$name]];
+            }
+        }
 
-        return $named === null ? null : [$nameEnd + 1, $named];
+        return null;
     }
 
     private static function ruleSet(string $lang): ?RuleSet

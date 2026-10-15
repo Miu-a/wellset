@@ -5,7 +5,7 @@
   { "input": "800 W a 45 min", "expected": "800\u00A0W a 45\u00A0min", "note": "spojka a sa neviaže, chýba overený zdroj", "rules": ["number-unit"] },
   { "input": "6. januára 2010", "expected": "6.\u00A0januára\u00A02010", "note": "dátum sa nerozdeľuje", "rules": ["date-day-month-name", "date-month-year"] },
   { "input": "25. 02. 2009", "expected": "25.\u00A002.\u00A02009", "note": "dátum číslicami", "rules": ["date-day-month"] },
-  { "input": "išiel v Košiciach", "expected": "išiel v Košiciach", "note": "jednopísmenové predložky sú otvorená otázka" },
+  { "input": "išiel v Košiciach", "expected": "išiel v Košiciach", "note": "jednopísmenové predložky zatiaľ bez pravidla, chýba overený zdroj" },
   { "input": "", "expected": "", "note": "prázdny reťazec" },
   { "input": "<p>váži 15 <b>kg</b></p>", "expected": "<p>váži 15\u00A0<b>kg</b></p>", "note": "inline tag", "rules": ["number-unit"], "html": true }
 ]

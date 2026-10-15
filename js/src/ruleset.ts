@@ -1,4 +1,4 @@
-const KINDS = new Set(['number', 'ordinal', 'decimal', 'digit-group', 'initial']);
+const KINDS = new Set(['number', 'ordinal', 'decimal', 'digit-group', 'initial', 'initials']);
 const PREV_LEADING = ['(', '[', '„', '"', '‚', "'"];
 const NEXT_TRAILING = ['.', ',', ';', ':', '!', '?', ')', ']', '“', '"'];
 
@@ -167,14 +167,32 @@ function kinds(word: string): string[] {
     }
     return [];
   }
-  if (word.endsWith('.')) {
+  const result: string[] = [];
+  if (length >= 2 && word.endsWith('.')) {
     const letter = word.slice(0, -1);
-    if (letter.length > 0 && letter.length <= 2 && [...letter].length === 1 && letter.toLowerCase() !== letter) {
-      return ['initial'];
+    if (letter.length <= 2 && [...letter].length === 1 && letter.toLowerCase() !== letter) {
+      result.push('initial');
+    }
+    if (isInitials(word)) {
+      result.push('initials');
     }
   }
 
-  return [];
+  return result;
+}
+
+function isInitials(word: string): boolean {
+  const chars = [...word];
+  if (chars.length < 4 || chars.length % 2 !== 0) {
+    return false;
+  }
+  for (let at = 0; at < chars.length; at += 2) {
+    const letter = chars[at]!;
+    if (chars[at + 1] !== '.' || letter.toLowerCase() === letter) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function digitRun(word: string, from: number): number {
