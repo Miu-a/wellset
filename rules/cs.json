@@ -3,7 +3,7 @@
   "source": "Internetová jazyková příručka ÚJČ AV ČR, heslo Zalomení řádků a nevhodné výrazy na jejich konci, oddíl Nevhodné výrazy na konci řádků, https://prirucka.ujc.cas.cz/?id=880",
   "rules": [
     { "id": "single-letter-word", "prev": { "words": ["k", "s", "v", "z", "o", "u", "a", "i"], "caseInsensitive": true } },
-    { "id": "digit-group", "prev": { "kind": "number" }, "next": { "kind": "digit-group" } },
+    { "id": "number-number", "prev": { "kind": ["number", "decimal"] }, "next": { "kind": "number" } },
     { "id": "number-unit", "prev": { "kind": ["number", "decimal"] }, "next": { "words": ["%", "‰", "str", "hod", "mm", "cm", "m", "km", "m²", "m³", "g", "kg", "h", "min", "°C", "Kč", "€", "$", "EUR", "CZK"] } },
     { "id": "symbol-number", "prev": { "words": ["§", "#", "*", "†"] }, "next": { "kind": "number" } },
     { "id": "abbreviation-number", "prev": { "words": ["s.", "č.", "obr.", "tab."] }, "next": { "kind": "number" } },

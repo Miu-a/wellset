@@ -100,7 +100,7 @@ Zdroj: Internetová jazyková příručka ÚJČ AV ČR, [Zalomení řádků a ne
 | pravidlo | příklad |
 |---|---|
 | `single-letter-word`: k s v z o u a i | `k~mostu`, `V~Plzni` |
-| `digit-group` | `1~000~000` |
+| `number-number`: čísla členěná mezerami | `1~000~000`, `777~12~34~56`, `ČSN~01~6910` |
 | `number-unit`: %, ‰, str., hod., jednotky, měny | `50~%`, `2,5~km`, `250~€` |
 | `symbol-number`: § # * † | `§~23` |
 | `abbreviation-number`: s. č. obr. tab. | `s.~53`, `č.~9` |
@@ -276,9 +276,8 @@ Tato pravidla knihovna nezavádí, protože jsem pro ně nenašel ověřitelný 
 
 **Formát a tokeny**
 
-- Dvojtečka v poměrech (`5 : 3`, `1 : 50 000`, cs). Z `next` se `:` odstraní a zbyde prázdné slovo.
 - Číslo a počítané slovo (`500 lidí`), řadová číslovka a slovo (`5. pluk`), římské číslice (`II. patro`, `Karel IV.`). Chybí druh „libovolné slovo“ a `roman`. Řadovou číslovku před libovolným slovem nelze odlišit od čísla na konci věty.
-- Telefonní čísla (`+420 800 123 987`), kódy (`ČSN 01 6910`, `PS PČR`), členění desetinné části (`25,325 23`), cs.
+- Předvolba telefonního čísla (`+420 800`) a kódy z písmen (`PS PČR`), cs. `+420` není `number`.
 - Zkratky rodných jmen delší než jedno písmeno (`Fr. Daneš`), cs.
 - `initial` zachytí i větu končící velkým písmenem (`vitamín C. Další`). U němčiny jsem `initial-surname` vynechal, protože by vázal `z. B. und`.
 
