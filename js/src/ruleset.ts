@@ -54,7 +54,7 @@ export class RuleSet {
       return false;
     }
 
-    const nextEnd = trailingStart(next);
+    const nextEnd = trailingStart(next) || next.length;
     const nextKindSources =
       next[nextEnd] === '.' ? [next.slice(0, nextEnd), next.slice(0, nextEnd + 1)] : [next.slice(0, nextEnd)];
     next = nextKindSources[0]!;

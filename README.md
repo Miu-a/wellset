@@ -75,7 +75,7 @@ Slovo je nejdelší úsek bez mezer. Mezeru odděluje tabulátor, konec řádku,
 
 Podmínka má buď `words` (seznam slov, volitelně `"caseInsensitive": true`), nebo `kind` (druh tokenu, řetězec nebo pole). Obojí najednou mít nesmí.
 
-Před porovnáním se z `prev` odstraní úvodní `( [ „ " ‚ '` a z `next` koncové `. , ; : ! ? ) ] “ "`. Seznam `next` proto obsahuje `kg`, ne `kg.`. U `next` se druh tokenu zkouší na očištěném slově a, následuje-li v textu tečka, i na slově s ní. Proto je `6.)` zároveň `number` i `ordinal`.
+Před porovnáním se z `prev` odstraní úvodní `( [ „ " ‚ '` a z `next` koncové `. , ; : ! ? ) ] “ "`. Seznam `next` proto obsahuje `kg`, ne `kg.`. Slovo složené jen z těchto znaků, třeba samotná `:`, se porovná celé. U `next` se druh tokenu zkouší na očištěném slově a, následuje-li v textu tečka, i na slově s ní. Proto je `6.)` zároveň `number` i `ordinal`.
 
 | `kind` | co rozpozná | příklad |
 |---|---|---|
@@ -110,6 +110,9 @@ Zdroj: Internetová jazyková příručka ÚJČ AV ČR, [Zalomení řádků a ne
 | `abbreviation-following`: tj. tzv. tzn. | `tzv.~klikání` |
 | `initial-surname` | `M.~Těšitelová`, `T.~G.~M.` |
 | `title-name` | `Ing.~Ivana Poliaková` |
+| `spaced-dash`: pomlčka zůstane na konci řádku | `Přišel~– a~hned` |
+| `number-operator`, `operator-number`: `:` `=` | `1~:~50~000`, `10~:~2~=~5` |
+| `standard-chain`, `standard-number`: ČSN STN EN ISO IEC DIN | `ČSN~EN~ISO~9001` |
 
 Příručka u jednotek a titulů jmenuje kategorii a dává příklady (str., hod., m², kg, h, °C, Kč, €; p., mjr., Ing.). Seznamy v `rules/cs.json` doplňují další běžné členy kategorie.
 

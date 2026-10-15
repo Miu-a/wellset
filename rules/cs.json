@@ -18,6 +18,11 @@
     { "id": "compound-abbreviation-n-l", "prev": { "words": ["n."] }, "next": { "words": ["l"] } },
     { "id": "abbreviation-following", "prev": { "words": ["tj.", "tzv.", "tzn."], "caseInsensitive": true } },
     { "id": "initial-surname", "prev": { "kind": "initial" } },
-    { "id": "title-name", "prev": { "words": ["p.", "pí", "mjr.", "Ing.", "Mgr.", "Bc.", "MUDr.", "JUDr.", "PhDr.", "RNDr.", "doc.", "prof."] } }
+    { "id": "title-name", "prev": { "words": ["p.", "pí", "mjr.", "Ing.", "Mgr.", "Bc.", "MUDr.", "JUDr.", "PhDr.", "RNDr.", "doc.", "prof."] } },
+    { "id": "spaced-dash", "next": { "words": ["–"] } },
+    { "id": "number-operator", "prev": { "kind": ["number", "decimal"] }, "next": { "words": [":", "="] } },
+    { "id": "operator-number", "prev": { "words": [":", "="] }, "next": { "kind": ["number", "decimal"] } },
+    { "id": "standard-chain", "prev": { "words": ["ČSN", "STN", "EN", "ISO", "IEC", "DIN"] }, "next": { "words": ["ČSN", "STN", "EN", "ISO", "IEC", "DIN"] } },
+    { "id": "standard-number", "prev": { "words": ["ČSN", "STN", "EN", "ISO", "IEC", "DIN"] }, "next": { "kind": "number" } }
   ]
 }

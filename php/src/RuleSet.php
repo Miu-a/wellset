@@ -70,7 +70,7 @@ final class RuleSet
             return false;
         }
 
-        $nextEnd = self::trailingStart($next);
+        $nextEnd = self::trailingStart($next) ?: strlen($next);
         $nextKindSources = ($next[$nextEnd] ?? '') === '.'
             ? [substr($next, 0, $nextEnd), substr($next, 0, $nextEnd + 1)]
             : [substr($next, 0, $nextEnd)];
